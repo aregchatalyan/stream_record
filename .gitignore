@@ -1,3 +1,5 @@
+.idea
+
 app/node_modules
 server/node_modules
-server/files
+server/files/*.webm
