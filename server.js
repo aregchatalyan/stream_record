@@ -45,7 +45,7 @@ wss.on('connection', async (socket, request) => {
       sessionId: peer.sessionId
     });
 
-    console.log('router.rtpCapabilities:', router.rtpCapabilities)
+    // console.log('router.rtpCapabilities:', router.rtpCapabilities);
 
     socket.send(message);
   } catch (error) {
@@ -57,12 +57,12 @@ wss.on('connection', async (socket, request) => {
   socket.on('message', async (message) => {
     try {
       const jsonMessage = JSON.parse(message);
-      console.log('socket::message [jsonMessage:%o]', jsonMessage);
+      // console.log('socket::message [jsonMessage:%o]', jsonMessage);
 
       const response = await handleJsonMessage(jsonMessage);
 
       if (response) {
-        console.log('sending response %o', response);
+        // console.log('sending response %o', response);
         socket.send(JSON.stringify(response));
       }
     } catch (error) {
@@ -130,14 +130,14 @@ const handleTransportConnectRequest = async (jsonMessage) => {
   }
 
   await transport.connect({ dtlsParameters: jsonMessage.dtlsParameters });
-  console.log('handleTransportConnectRequest() transport connected');
+  // console.log('handleTransportConnectRequest() transport connected');
   return {
     action: 'connect-transport'
   };
 };
 
 const handleProduceRequest = async (jsonMessage) => {
-  console.log('handleProduceRequest [data:%o]', jsonMessage);
+  // console.log('handleProduceRequest [data:%o]', jsonMessage);
 
   const peer = peers.get(jsonMessage.sessionId);
 
@@ -158,7 +158,7 @@ const handleProduceRequest = async (jsonMessage) => {
 
   peer.addProducer(producer);
 
-  console.log('handleProducerRequest() new producer added [id:%s, kind:%s]', producer.id, producer.kind);
+  // console.log('handleProducerRequest() new producer added [id:%s, kind:%s]', producer.id, producer.kind);
 
   return {
     action: 'produce',
@@ -200,7 +200,7 @@ const handleStopRecordRequest = async (jsonMessage) => {
 };
 
 const publishProducerRtpStream = async (peer, producer, ffmpegRtpCapabilities) => {
-  console.log('publishProducerRtpStream()');
+  // console.log('publishProducerRtpStream()');
 
   // Create the mediasoup RTP Transport used to send media to the GStreamer process
   const rtpTransportConfig = config.plainRtpTransport;
@@ -310,9 +310,10 @@ const getProcess = (recordInfo) => {
       });
     });
 
-    httpsServer.listen(SERVER_PORT, () =>
-      console.log('Socket Server listening on port %d', SERVER_PORT)
-    );
+    httpsServer.listen(SERVER_PORT, () => {
+      console.log('Socket Server listening on port %d', SERVER_PORT);
+      console.log('open', `https://localhost:${SERVER_PORT}`);
+    });
   } catch (error) {
     console.error('Failed to initialize application [error:%o] destroying in 2 seconds...', error);
     setTimeout(() => process.exit(1), 2000);
