@@ -4,7 +4,7 @@ const child_process = require('child_process');
 const { EventEmitter } = require('events');
 const shell = require('shelljs');
 
-const { getCodecInfoFromRtpParameters } = require('./utils');
+const { getCodecInfoFromRtpParameters } = require('../utils/utils');
 
 const RECORD_FILE_LOCATION_PATH = process.env.RECORD_FILE_LOCATION_PATH || './files';
 

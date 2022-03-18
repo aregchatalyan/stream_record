@@ -7,18 +7,18 @@ const { randomUUID: uuid } = require('crypto');
 env();
 
 const config = require('./config');
-const FFmpeg = require('./ffmpeg');
-const GStreamer = require('./gstreamer');
+const FFmpeg = require('./codecs/ffmpeg');
+const GStreamer = require('./codecs/gstreamer');
 const {
   initializeWorkers,
   createRouter,
   createTransport
 } = require('./mediasoup');
-const Peer = require('./peer');
+const Peer = require('./utils/peer');
 const {
   getPort,
   releasePort
-} = require('./port');
+} = require('./utils/port');
 
 const PROCESS_NAME = process.env.PROCESS_NAME || 'FFmpeg';
 const SERVER_PORT = process.env.SERVER_PORT || 3000;

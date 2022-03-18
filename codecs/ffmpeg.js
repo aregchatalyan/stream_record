@@ -3,8 +3,8 @@
 const child_process = require('child_process');
 const { EventEmitter } = require('events');
 
-const { createSdpText } = require('./sdp');
-const { convertStringToStream } = require('./utils');
+const { createSdpText } = require('../utils/sdp');
+const { convertStringToStream } = require('../utils/utils');
 
 const RECORD_FILE_LOCATION_PATH = process.env.RECORD_FILE_LOCATION_PATH || './files';
 
