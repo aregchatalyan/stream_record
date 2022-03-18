@@ -1,24 +1,21 @@
 const fs = require('fs');
+const path = require("path");
 const https = require('https');
 const WebSocket = require('ws');
-const {config: env} = require('dotenv');
+const express = require('express');
+const { config: env } = require('dotenv');
 const { randomUUID: uuid } = require('crypto');
 
 env();
 
+const app = express();
 const config = require('./config');
+
+const Peer = require('./utils/peer');
 const FFmpeg = require('./codecs/ffmpeg');
 const GStreamer = require('./codecs/gstreamer');
-const {
-  initializeWorkers,
-  createRouter,
-  createTransport
-} = require('./mediasoup');
-const Peer = require('./utils/peer');
-const {
-  getPort,
-  releasePort
-} = require('./utils/port');
+const { getPort, releasePort } = require('./utils/port');
+const { initializeWorkers, createRouter, createTransport } = require('./mediasoup');
 
 const PROCESS_NAME = process.env.PROCESS_NAME || 'FFmpeg';
 const SERVER_PORT = process.env.SERVER_PORT || 3000;
@@ -27,7 +24,7 @@ const HTTPS_OPTIONS = Object.freeze({
   key: fs.readFileSync('./ssl/key.pem')
 });
 
-const httpsServer = https.createServer(HTTPS_OPTIONS);
+const httpsServer = https.createServer(HTTPS_OPTIONS, app);
 const wss = new WebSocket.Server({ server: httpsServer });
 const peers = new Map();
 
@@ -99,7 +96,8 @@ const handleJsonMessage = async (jsonMessage) => {
       return await handleStartRecordRequest(jsonMessage);
     case 'stop-record':
       return await handleStopRecordRequest(jsonMessage);
-    default: console.log('handleJsonMessage() unknown action [action:%s]', action);
+    default:
+      console.log('handleJsonMessage() unknown action [action:%s]', action);
   }
 };
 
@@ -303,6 +301,14 @@ const getProcess = (recordInfo) => {
     console.log('starting server [processName:%s]', PROCESS_NAME);
     await initializeWorkers();
     router = await createRouter();
+
+    app.use(express.static(path.join(__dirname, 'app', 'dist')));
+
+    app.get('*', (req, res) => {
+      res.sendFile('index.html', {
+        root: path.join(__dirname, 'app', 'dist')
+      });
+    });
 
     httpsServer.listen(SERVER_PORT, () =>
       console.log('Socket Server listening on port %d', SERVER_PORT)

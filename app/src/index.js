@@ -35,7 +35,7 @@ const getVideoCodecs = () => {
   const videoCodec = params.get('videocodec')
   console.warn('videoCodec');
 
-  const codec = mediasoupConfig.router.mediaCodecs.find(c=>{
+  const codec = mediasoupConfig.router.mediaCodecs.find(c => {
     if (!videoCodec)
       return undefined;
 
@@ -73,7 +73,8 @@ const handleJsonMessage = async (jsonMessage) => {
     case 'produce':
       await handleProduceRequest(jsonMessage);
       break;
-    default: console.log('handleJsonMessage() unknown action %s', action);
+    default:
+      console.log('handleJsonMessage() unknown action %s', action);
   }
 };
 
