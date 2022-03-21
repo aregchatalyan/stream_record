@@ -31,7 +31,7 @@ const peers = new Map();
 let router;
 
 wss.on('connection', async (socket, request) => {
-  console.log('new socket connection [ip%s]', request.headers['x-forwared-for'] || request.headers.origin);
+  // console.log('new socket connection [ip%s]', request.headers['x-forwared-for'] || request.headers.origin);
 
   try {
     const sessionId = uuid();
@@ -71,7 +71,7 @@ wss.on('connection', async (socket, request) => {
   });
 
   socket.once('close', () => {
-    console.log('socket::close [sessionId:%s]', socket.sessionId);
+    // console.log('socket::close [sessionId:%s]', socket.sessionId);
 
     const peer = peers.get(socket.sessionId);
 
@@ -298,7 +298,7 @@ const getProcess = (recordInfo) => {
 
 (async () => {
   try {
-    console.log('starting server [processName:%s]', PROCESS_NAME);
+    // console.log('starting server [processName:%s]', PROCESS_NAME);
     await initializeWorkers();
     router = await createRouter();
 
@@ -311,7 +311,7 @@ const getProcess = (recordInfo) => {
     });
 
     httpsServer.listen(SERVER_PORT, () => {
-      console.log('Socket Server listening on port %d', SERVER_PORT);
+      // console.log('Socket Server listening on port %d', SERVER_PORT);
       console.log('open', `https://localhost:${SERVER_PORT}`);
     });
   } catch (error) {
