@@ -1,12 +1,19 @@
 const fs = require('fs');
-const path = require("path");
+const path = require('path');
+
 const https = require('https');
 const WebSocket = require('ws');
 const express = require('express');
+
 const { config: env } = require('dotenv');
 const { randomUUID: uuid } = require('crypto');
 
-env();
+env({
+  path: `${__dirname}/.env`,
+  encoding: 'utf8',
+  debug: false,
+  override: true,
+});
 
 const app = express();
 const config = require('./config');
@@ -30,9 +37,7 @@ const peers = new Map();
 
 let router;
 
-wss.on('connection', async (socket, request) => {
-  // console.log('new socket connection [ip%s]', request.headers['x-forwared-for'] || request.headers.origin);
-
+wss.on('connection', async (socket) => {
   try {
     const sessionId = uuid();
     socket.sessionId = sessionId;

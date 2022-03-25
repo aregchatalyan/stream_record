@@ -12,7 +12,7 @@ module.exports.createSdpText = (rtpParameters) => {
 
   return `v=0
   o=- 0 0 IN IP4 127.0.0.1
-  s=FFmpeg
+  s=
   c=IN IP4 127.0.0.1
   t=0 0
   m=video ${video.remoteRtpPort} RTP/AVP ${videoCodecInfo.payloadType} 

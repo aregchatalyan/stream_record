@@ -4,8 +4,6 @@ const { GUM } = require('./gum');
 const Peer = require('./peer');
 const SocketQueue = require('./queue');
 
-const mediasoupConfig = require('../../config');
-
 let peer;
 const queue = new SocketQueue();
 
@@ -29,29 +27,6 @@ const handleSocketClose = () => {
   document.getElementById('startRecordButton').disabled = true;
   document.getElementById('stopRecordButton').disabled = true;
 };
-
-const getVideoCodecs = () => {
-  const params = new URLSearchParams(location.search.slice(1));
-  const videoCodec = params.get('videocodec')
-  console.warn('videoCodec');
-
-  const codec = mediasoupConfig.router.mediaCodecs.find(c => {
-    if (!videoCodec)
-      return undefined;
-
-    return ~c.mimeType.toLowerCase().indexOf(videoCodec.toLowerCase())
-  });
-
-  console.warn('codec', codec);
-  return codec ? codec : {
-    kind: 'video',
-    mimeType: 'video/VP8',
-    clockRate: 90000,
-    parameters: {
-      'x-google-start-bitrate': 1000
-    }
-  };
-}
 
 const handleSocketError = error => {
   console.error('handleSocketError() [error:%o]', error);
@@ -150,7 +125,7 @@ const getMediaStream = async () => {
     peer.producers.push(videoProducer);
   }
 
-  // if there is a audio track start sending it to the server
+  // if there is an audio track start sending it to the server
   if (audioTrack) {
     const audioProducer = await peer.sendTransport.produce({ track: audioTrack });
     peer.producers.push(audioProducer);
@@ -193,7 +168,7 @@ const handleProduceRequest = async (jsonMessage) => {
 const handleTransportConnectEvent = ({ dtlsParameters }, callback, errback) => {
   console.log('handleTransportConnectEvent()');
   try {
-    const action = (jsonMessage) => {
+    const action = () => {
       console.log('connect-transport action');
       callback();
       queue.remove('connect-transport');

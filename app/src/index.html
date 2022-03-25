@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
 
@@ -7,12 +7,12 @@
   <title>Mediasoup Record Demo</title>
 </head>
   <body>
-    <video id="localVideo" autoplay muted playsinline width="640" height="480"></video>
+    <video id="localVideo" autoplay muted playsinline height="280"></video>
     <br/>
     <button id="startRecordButton" onclick="Lib.startRecord()" disabled>Start Record</button>
     <button id="stopRecordButton" onclick="Lib.stopRecord()" disabled>Stop Record</button>
 
-    <script>window.localStorage.setItem('debug', 'mediasoup-client:*');</script>
+<!--    <script>window.localStorage.setItem('debug', 'mediasoup-client:*');</script>-->
     <script src="main.js"></script>
   </body>
 </html>
