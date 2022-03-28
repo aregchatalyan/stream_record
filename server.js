@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const https = require('https');
-const WebSocket = require('ws');
 const express = require('express');
+const { WebSocketServer } = require('ws');
 
 const { config: env } = require('dotenv');
 const { randomUUID: uuid } = require('crypto');
@@ -26,20 +26,21 @@ const { initializeWorkers, createRouter, createTransport } = require('./mediasou
 
 const PROCESS_NAME = process.env.PROCESS_NAME || 'FFmpeg';
 const SERVER_PORT = process.env.SERVER_PORT || 3000;
+
 const HTTPS_OPTIONS = Object.freeze({
   cert: fs.readFileSync('./ssl/cert.pem'),
   key: fs.readFileSync('./ssl/key.pem')
 });
 
 const httpsServer = https.createServer(HTTPS_OPTIONS, app);
-const wss = new WebSocket.Server({ server: httpsServer });
-const peers = new Map();
+const wss = new WebSocketServer({ server: httpsServer });
 
 let router;
+const peers = new Map();
 
 wss.on('connection', async (socket) => {
   try {
-    const sessionId = uuid();
+    const sessionId = uuid({ disableEntropyCache: true });
     socket.sessionId = sessionId;
     const peer = new Peer(sessionId);
     peers.set(sessionId, peer);
@@ -204,7 +205,7 @@ const handleStopRecordRequest = async (jsonMessage) => {
   }
 };
 
-const publishProducerRtpStream = async (peer, producer, ffmpegRtpCapabilities) => {
+const publishProducerRtpStream = async (peer, producer) => {
   // console.log('publishProducerRtpStream()');
 
   // Create the mediasoup RTP Transport used to send media to the GStreamer process
@@ -303,7 +304,6 @@ const getProcess = (recordInfo) => {
 
 (async () => {
   try {
-    // console.log('starting server [processName:%s]', PROCESS_NAME);
     await initializeWorkers();
     router = await createRouter();
 
@@ -316,8 +316,7 @@ const getProcess = (recordInfo) => {
     });
 
     httpsServer.listen(SERVER_PORT, () => {
-      // console.log('Socket Server listening on port %d', SERVER_PORT);
-      console.log('open', `https://localhost:${SERVER_PORT}`);
+      console.log('open https://localhost:%d', SERVER_PORT);
     });
   } catch (error) {
     console.error('Failed to initialize application [error:%o] destroying in 2 seconds...', error);

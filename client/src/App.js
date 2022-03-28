@@ -35,13 +35,31 @@ const App = () => {
   };
 
   return (
-    <div>
-      <video id="localVideo" autoPlay muted playsInline height="280"/>
+    <div id="app">
+      <video
+        id="localVideo"
+        autoPlay
+        muted
+        playsInline
+      />
 
-      <br/>
+      <div id="control">
+        <button
+          id="startRecordButton"
+          ref={startBtnRef}
+          onClick={startRecord}
+        >
+          Start Record
+        </button>
 
-      <button id="startRecordButton" ref={startBtnRef} onClick={startRecord}>Start Record</button>
-      <button id="stopRecordButton" ref={stopBtnRef} onClick={stopRecord}>Stop Record</button>
+        <button
+          id="stopRecordButton"
+          ref={stopBtnRef}
+          onClick={stopRecord}
+        >
+          Stop Record
+        </button>
+      </div>
     </div>
   );
 }

@@ -2,3 +2,19 @@ body {
   margin: 0;
   box-sizing: border-box;
 }
+
+#app {
+  width: 400px;
+  border: 1px solid;
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+#control {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
