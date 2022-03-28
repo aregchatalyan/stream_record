@@ -1,5 +1,5 @@
 // Queue to handle async requests/responses
-module.exports = class SocketQueue {
+export default class SocketQueue {
   constructor () {
     this.queue = new Map();
   }

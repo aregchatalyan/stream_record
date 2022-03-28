@@ -4,6 +4,8 @@ const DEFAULT_CONSTRAINTS = Object.freeze({
 });
 
 // Gets the users camera and returns the media stream
-module.exports.GUM = async () => {
+const GUM = async () => {
   return await navigator.mediaDevices.getUserMedia(DEFAULT_CONSTRAINTS);
 };
+
+export default GUM;

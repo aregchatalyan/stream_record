@@ -307,11 +307,11 @@ const getProcess = (recordInfo) => {
     await initializeWorkers();
     router = await createRouter();
 
-    app.use(express.static(path.join(__dirname, 'app', 'dist')));
+    app.use(express.static(path.join(__dirname, 'client', 'build')));
 
     app.get('*', (req, res) => {
       res.sendFile('index.html', {
-        root: path.join(__dirname, 'app', 'dist')
+        root: path.join(__dirname, 'client', 'build')
       });
     });
 

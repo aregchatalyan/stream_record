@@ -1,8 +1,8 @@
-const mediasoup = require('mediasoup-client');
+import * as mediasoup from "mediasoup-client";
 
-const { GUM } = require('./gum');
-const Peer = require('./peer');
-const SocketQueue = require('./queue');
+import GUM from "./gum";
+import Peer from "./peer";
+import SocketQueue from "./queue";
 
 let peer;
 const queue = new SocketQueue();
@@ -217,26 +217,4 @@ socket.addEventListener('message', handleSocketMessage);
 socket.addEventListener('error', handleSocketError);
 socket.addEventListener('close', handleSocketClose);
 
-module.exports.startRecord = () => {
-  console.log('startRecord()');
-
-  socket.send(JSON.stringify({
-    action: 'start-record',
-    sessionId: peer.sessionId,
-  }));
-
-  document.getElementById('startRecordButton').disabled = true;
-  document.getElementById('stopRecordButton').disabled = false;
-};
-
-module.exports.stopRecord = () => {
-  console.log('stopRecord()');
-
-  socket.send(JSON.stringify({
-    action: 'stop-record',
-    sessionId: peer.sessionId
-  }));
-
-  document.getElementById('startRecordButton').disabled = false;
-  document.getElementById('stopRecordButton').disabled = true;
-};
+export {socket, peer}

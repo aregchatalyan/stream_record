@@ -1,5 +1,5 @@
 // Class to hold peers info
-module.exports = class Peer {
+export default class Peer {
   constructor (sessionId, device) {
     this.sessionId = sessionId;
     this.device = device;
