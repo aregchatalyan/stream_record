@@ -9,6 +9,7 @@
 
 # production
 /build
+src/ssl/*.pem
 
 # misc
 .DS_Store

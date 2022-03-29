@@ -3,7 +3,7 @@ const path = require('path');
 
 const https = require('https');
 const express = require('express');
-const { WebSocketServer } = require('ws');
+const { Server } = require('socket.io');
 
 const { config: env } = require('dotenv');
 const { randomUUID: uuid } = require('crypto');
@@ -33,12 +33,12 @@ const HTTPS_OPTIONS = Object.freeze({
 });
 
 const httpsServer = https.createServer(HTTPS_OPTIONS, app);
-const wss = new WebSocketServer({ server: httpsServer });
+const io = new Server(httpsServer, { cors: { origin: 'https://localhost:8080' } });
 
 let router;
 const peers = new Map();
 
-wss.on('connection', async (socket) => {
+io.on('connection', async (socket) => {
   try {
     const sessionId = uuid({ disableEntropyCache: true });
     socket.sessionId = sessionId;
@@ -53,10 +53,10 @@ wss.on('connection', async (socket) => {
 
     // console.log('router.rtpCapabilities:', router.rtpCapabilities);
 
-    socket.send(message);
+    socket.emit('message', message);
   } catch (error) {
     console.error('Failed to create new peer [error:%o]', error);
-    socket.terminate();
+    socket.close();
     return;
   }
 
@@ -69,7 +69,7 @@ wss.on('connection', async (socket) => {
 
       if (response) {
         // console.log('sending response %o', response);
-        socket.send(JSON.stringify(response));
+        socket.emit('message', JSON.stringify(response));
       }
     } catch (error) {
       console.error('Failed to handle socket message [error:%o]', error);
@@ -77,7 +77,7 @@ wss.on('connection', async (socket) => {
   });
 
   socket.once('close', () => {
-    // console.log('socket::close [sessionId:%s]', socket.sessionId);
+    console.log('socket::close [sessionId:%s]', socket.sessionId);
 
     const peer = peers.get(socket.sessionId);
 

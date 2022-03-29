@@ -1,3 +1,4 @@
+import { io } from "socket.io-client";
 import * as mediasoup from "mediasoup-client";
 
 import GUM from "./gum";
@@ -7,7 +8,7 @@ import SocketQueue from "./queue";
 let peer;
 const queue = new SocketQueue();
 
-const socket = new WebSocket(`wss://${window.location.hostname}:3000`);
+const socket = new io(`https://${window.location.hostname}:3000`);
 
 const handleSocketOpen = async () => {
   console.log('handleSocketOpen()');
@@ -15,7 +16,7 @@ const handleSocketOpen = async () => {
 
 const handleSocketMessage = async (message) => {
   try {
-    const jsonMessage = JSON.parse(message.data);
+    const jsonMessage = JSON.parse(message);
     await handleJsonMessage(jsonMessage);
   } catch (error) {
     console.error('handleSocketMessage() failed [error:%o]', error);
@@ -78,7 +79,7 @@ const createTransport = () => {
   }
 
   // First we must create the mediasoup transport on the server side
-  socket.send(JSON.stringify({
+  socket.emit('message', JSON.stringify({
     action: 'create-transport',
     sessionId: peer.sessionId
   }));
@@ -176,7 +177,7 @@ const handleTransportConnectEvent = ({ dtlsParameters }, callback, errback) => {
 
     queue.push('connect-transport', action);
 
-    socket.send(JSON.stringify({
+    socket.emit('message', JSON.stringify({
       action: 'connect-transport',
       sessionId: peer.sessionId,
       transportId: peer.sendTransport.id,
@@ -199,7 +200,7 @@ const handleTransportProduceEvent = ({ kind, rtpParameters }, callback, errback)
 
     queue.push('produce', action);
 
-    socket.send(JSON.stringify({
+    socket.emit('message', JSON.stringify({
       action: 'produce',
       sessionId: peer.sessionId,
       transportId: peer.sendTransport.id,
@@ -212,9 +213,9 @@ const handleTransportProduceEvent = ({ kind, rtpParameters }, callback, errback)
   }
 };
 
-socket.addEventListener('open', handleSocketOpen);
-socket.addEventListener('message', handleSocketMessage);
-socket.addEventListener('error', handleSocketError);
-socket.addEventListener('close', handleSocketClose);
+socket.on('open', handleSocketOpen);
+socket.on('message', handleSocketMessage);
+socket.on('error', handleSocketError);
+socket.on('close', handleSocketClose);
 
 export {socket, peer}

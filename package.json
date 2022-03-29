@@ -18,7 +18,7 @@
     "express": "^4.17.3",
     "mediasoup": "^3.9.5",
     "shelljs": "^0.8.5",
-    "ws": "^8.4.2"
+    "socket.io": "^4.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
