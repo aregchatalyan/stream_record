@@ -56,7 +56,7 @@ io.on('connection', async (socket) => {
     socket.emit('message', message);
   } catch (error) {
     console.error('Failed to create new peer [error:%o]', error);
-    socket.close();
+    socket.disconnect();
     return;
   }
 

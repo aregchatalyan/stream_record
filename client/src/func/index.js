@@ -8,11 +8,16 @@ import SocketQueue from "./queue";
 let peer;
 const queue = new SocketQueue();
 
-const socket = new io(`https://${window.location.hostname}:3000`);
+const socket = io(`https://${window.location.hostname}:3000`, {
+  transports: ['websocket', 'polling'],
+  autoConnect: true,
+  secure: true,
+});
 
-const handleSocketOpen = async () => {
-  console.log('handleSocketOpen()');
-};
+socket.on('connect_error', () => {
+  socket.io.opts.transports = ['polling', 'websocket'];
+  socket.io.opts.upgrade = true;
+});
 
 const handleSocketMessage = async (message) => {
   try {
@@ -23,20 +28,8 @@ const handleSocketMessage = async (message) => {
   }
 };
 
-const handleSocketClose = () => {
-  console.log('handleSocketClose()');
-  document.getElementById('startRecordButton').disabled = true;
-  document.getElementById('stopRecordButton').disabled = true;
-};
-
-const handleSocketError = error => {
-  console.error('handleSocketError() [error:%o]', error);
-};
-
 const handleJsonMessage = async (jsonMessage) => {
-  const { action } = jsonMessage;
-
-  switch (action) {
+  switch (jsonMessage.action) {
     case 'router-rtp-capabilities':
       await handleRouterRtpCapabilitiesRequest(jsonMessage);
       break;
@@ -50,14 +43,13 @@ const handleJsonMessage = async (jsonMessage) => {
       await handleProduceRequest(jsonMessage);
       break;
     default:
-      console.log('handleJsonMessage() unknown action %s', action);
+      console.log('handleJsonMessage() unknown action %s', jsonMessage.action);
   }
 };
 
 const handleRouterRtpCapabilitiesRequest = async (jsonMessage) => {
   const { routerRtpCapabilities, sessionId } = jsonMessage;
   console.log('handleRouterRtpCapabilities() [rtpCapabilities:%o]', routerRtpCapabilities);
-
   try {
     const device = new mediasoup.Device();
     // Load the mediasoup device with the router rtp capabilities gotten from the server
@@ -67,7 +59,7 @@ const handleRouterRtpCapabilitiesRequest = async (jsonMessage) => {
     createTransport();
   } catch (error) {
     console.error('handleRouterRtpCapabilities() failed to init device [error:%o]', error);
-    socket.close();
+    socket.disconnect();
   }
 };
 
@@ -88,7 +80,6 @@ const createTransport = () => {
 // Mediasoup Transport on the server side has been created
 const handleCreateTransportRequest = async (jsonMessage) => {
   console.log('handleCreateTransportRequest() [data:%o]', jsonMessage);
-
   try {
     // Create the local mediasoup send transport
     peer.sendTransport = await peer.device.createSendTransport(jsonMessage);
@@ -99,7 +90,7 @@ const handleCreateTransportRequest = async (jsonMessage) => {
     await getMediaStream();
   } catch (error) {
     console.error('handleCreateTransportRequest() failed to create transport [error:%o]', error);
-    socket.close();
+    socket.disconnect();
   }
 };
 
@@ -213,9 +204,16 @@ const handleTransportProduceEvent = ({ kind, rtpParameters }, callback, errback)
   }
 };
 
-socket.on('open', handleSocketOpen);
 socket.on('message', handleSocketMessage);
-socket.on('error', handleSocketError);
-socket.on('close', handleSocketClose);
+
+socket.on('connect', () => console.log('Socket Connect'));
+
+socket.on('error', (error) => console.error('Socket Error [error:%o]', error));
+
+socket.on('disconnect', () => {
+  console.log('handleSocketClose()');
+  document.getElementById('startRecordButton').disabled = true;
+  document.getElementById('stopRecordButton').disabled = true;
+});
 
 export {socket, peer}

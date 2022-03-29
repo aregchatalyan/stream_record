@@ -7,6 +7,7 @@ const App = () => {
   const stopBtnRef = useRef(null);
 
   useEffect(() => {
+    startBtnRef.current.disabled = true;
     stopBtnRef.current.disabled = true;
   }, []);
 
@@ -59,6 +60,8 @@ const App = () => {
         >
           Stop Record
         </button>
+
+        <button onClick={() => socket.disconnect()}>Disconnect</button>
       </div>
     </div>
   );
