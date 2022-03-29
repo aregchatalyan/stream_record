@@ -11,9 +11,9 @@ let nextWorkerIndex = 0;
 module.exports.initializeWorkers = async () => {
   const { logLevel, logTags, rtcMinPort, rtcMaxPort } = config.worker;
 
-  // console.log('initializeWorkers() creating %d mediasoup workers', config.numWorkers);
+  // console.log('initializeWorkers() creating %d mediasoup workers', config.numWorkers.length);
 
-  for (let i = 0; i < config.numWorkers; ++i) {
+  for (const _ of config.numWorkers) {
     const worker = await mediasoup.createWorker({
       logLevel, logTags, rtcMinPort, rtcMaxPort
     });

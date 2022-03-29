@@ -3,7 +3,7 @@
 const os = require('os');
 
 module.exports = Object.freeze({
-  numWorkers: Object.keys(os.cpus()).length,
+  numWorkers: Array(os.cpus().length).fill(0),
   worker: {
     logLevel: 'debug',
     logTags: [

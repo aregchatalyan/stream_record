@@ -8,8 +8,13 @@ body {
   border: 1px solid;
   padding: 5px;
   margin: 5px;
+  border-radius: 7px;
   display: flex;
   flex-direction: column;
+}
+
+#localVideo {
+  border-radius: 7px;
 }
 
 #control {
