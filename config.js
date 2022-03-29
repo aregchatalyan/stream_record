@@ -1,6 +1,19 @@
 // Config file for mediasoup elements
 
 const os = require('os');
+const faces = os.networkInterfaces();
+
+const getLocalIp = () => {
+  let localIp = '127.0.0.1';
+
+  Object.keys(faces).forEach((name) => {
+    for (const {family, internal, address} of faces[name]) {
+      if (family !== "IPv4" || internal !== false) continue;
+      return localIp = address;
+    }
+  });
+  return localIp;
+};
 
 module.exports = Object.freeze({
   numWorkers: Array(os.cpus().length).fill(0),
@@ -53,14 +66,14 @@ module.exports = Object.freeze({
     ]
   },
   webRtcTransport: {
-    listenIps: [{ ip: '0.0.0.0', announcedIp: '192.168.5.33' }], // TODO: Change announcedIp to your external IP or domain name
+    listenIps: [{ ip: '0.0.0.0', announcedIp: getLocalIp() }], // TODO: Change announcedIp to your external IP or domain name
     enableUdp: true,
     enableTcp: true,
     preferUdp: true,
     maxIncomingBitrate: 1500000
   },
   plainRtpTransport: {
-    listenIp: { ip: '0.0.0.0', announcedIp: '192.168.5.33' }, // TODO: Change announcedIp to your external IP or domain name
+    listenIp: { ip: '0.0.0.0', announcedIp: getLocalIp() }, // TODO: Change announcedIp to your external IP or domain name
     rtcpMux: true,
     comedia: false
   }
