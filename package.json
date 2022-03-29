@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "nodemon server.js",
     "client:install": "npm install --prefix client",
     "client:start": "npm start --prefix client",
     "client:build": "npm run build --prefix client"
@@ -17,7 +16,6 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "mediasoup": "^3.9.5",
-    "shelljs": "^0.8.5",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
