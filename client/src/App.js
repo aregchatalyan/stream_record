@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { socket, peer } from "./func";
+import { socket, peer } from "./func/main";
 
 const App = () => {
   const startBtnRef = useRef(null);
   const stopBtnRef = useRef(null);
+  const [disconnected, setDisconnected] = useState(socket.connected);
 
   useEffect(() => {
     startBtnRef.current.disabled = true;
@@ -12,7 +13,7 @@ const App = () => {
   }, []);
 
   const startRecord = () => {
-    console.log('startRecord()');
+    console.log('Start record');
 
     socket.send(JSON.stringify({
       action: 'start-record',
@@ -24,7 +25,7 @@ const App = () => {
   };
 
   const stopRecord = () => {
-    console.log('stopRecord()');
+    console.log('Stop record');
 
     socket.send(JSON.stringify({
       action: 'stop-record',
@@ -61,7 +62,10 @@ const App = () => {
           Stop Record
         </button>
 
-        <button onClick={() => socket.disconnect()}>Disconnect</button>
+        <button onClick={() => {
+          socket.disconnect();
+          setDisconnected(true);
+        }} disabled={disconnected}>Disconnect</button>
       </div>
     </div>
   );
