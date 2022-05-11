@@ -1,17 +1,15 @@
-// Config file for mediasoup elements
-
 const os = require('os');
 const faces = os.networkInterfaces();
 
 const getLocalIp = () => {
   let localIp = '127.0.0.1';
 
-  Object.keys(faces).forEach((name) => {
-    for (const {family, internal, address} of faces[name]) {
-      if (family !== "IPv4" || internal !== false) continue;
+  for (const { family, internal, address } of Object.values(faces).flat(1)) {
+    if (family === 'IPv4' && !internal) {
       return localIp = address;
     }
-  });
+  }
+
   return localIp;
 };
 
@@ -66,7 +64,7 @@ module.exports = Object.freeze({
     ]
   },
   webRtcTransport: {
-    listenIps: [{ ip: '0.0.0.0', announcedIp: getLocalIp() }], // TODO: Change announcedIp to your external IP or domain name
+    listenIps: [ { ip: '0.0.0.0', announcedIp: getLocalIp() } ], // TODO: Change announcedIp to your external IP or domain name
     enableUdp: true,
     enableTcp: true,
     preferUdp: true,
@@ -76,5 +74,18 @@ module.exports = Object.freeze({
     listenIp: { ip: '0.0.0.0', announcedIp: getLocalIp() }, // TODO: Change announcedIp to your external IP or domain name
     rtcpMux: true,
     comedia: false
+  },
+  combiner: {
+    '2': '0_0|w0_0',
+    '3': '0_0|w0_0|w0+w1_0',
+    '4': '0_0|w0_0|0_h0|w0_h0',
+    '5': '0_0|w0_0|w0+w1_0|0_h0|w0_h0',
+    '6': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0',
+    '7': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1',
+    '8': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1',
+    '9': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1',
+    '10': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|0_h0+h1+h2',
+    '11': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|0_h0+h1+h2|w0_h0+h1+h2',
+    '12': '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2',
   }
 });

@@ -13,8 +13,6 @@ const App = () => {
   }, []);
 
   const startRecord = () => {
-    console.log('Start record');
-
     socket.send(JSON.stringify({
       action: 'start-record',
       sessionId: peer.sessionId,
@@ -25,8 +23,6 @@ const App = () => {
   };
 
   const stopRecord = () => {
-    console.log('Stop record');
-
     socket.send(JSON.stringify({
       action: 'stop-record',
       sessionId: peer.sessionId
@@ -34,6 +30,13 @@ const App = () => {
 
     startBtnRef.current.disabled = false;
     stopBtnRef.current.disabled = true;
+  };
+
+  const combineRecords = () => {
+    socket.send(JSON.stringify({
+      action: 'start-combine',
+      sessionId: peer.sessionId
+    }));
   };
 
   return (
@@ -60,6 +63,13 @@ const App = () => {
           onClick={stopRecord}
         >
           Stop Record
+        </button>
+
+        <button
+          id="combineRecordsButton"
+          onClick={combineRecords}
+        >
+          Combine Records
         </button>
 
         <button onClick={() => {

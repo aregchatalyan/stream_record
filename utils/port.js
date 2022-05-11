@@ -9,7 +9,7 @@ const takenPortSet = new Set();
 module.exports.getPort = async () => {
   let port = getRandomPort();
 
-  while(takenPortSet.has(port)) {
+  while (takenPortSet.has(port)) {
     port = getRandomPort();
   }
 

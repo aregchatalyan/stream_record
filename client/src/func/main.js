@@ -1,21 +1,21 @@
-import { io } from "socket.io-client";
-import * as mediasoup from "mediasoup-client";
+import { io } from 'socket.io-client';
+import * as mediasoup from 'mediasoup-client';
 
-import GUM from "./gum";
-import Peer from "./peer";
-import SocketQueue from "./queue";
+import GUM from './gum';
+import Peer from './peer';
+import SocketQueue from './queue';
 
 let peer;
 const queue = new SocketQueue();
 
-const socket = io(`https://${window.location.hostname}:3000`, {
-  transports: ['websocket', 'polling'],
+const socket = io(`https://${window.location.hostname}:3030`, {
+  transports: [ 'websocket', 'polling' ],
   autoConnect: true,
   secure: true,
 });
 
 socket.on('connect_error', () => {
-  socket.io.opts.transports = ['polling', 'websocket'];
+  socket.io.opts.transports = [ 'polling', 'websocket' ];
   socket.io.opts.upgrade = true;
 });
 
@@ -214,6 +214,7 @@ socket.on('disconnect', () => {
   console.log('handleSocketClose()');
   document.getElementById('startRecordButton').disabled = true;
   document.getElementById('stopRecordButton').disabled = true;
+  document.getElementById('combineRecordsButton').disabled = true;
 });
 
-export {socket, peer}
+export { socket, peer }

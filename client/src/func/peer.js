@@ -1,6 +1,6 @@
 // Class to hold peers info
 export default class Peer {
-  constructor (sessionId, device) {
+  constructor(sessionId, device) {
     this.sessionId = sessionId;
     this.device = device;
     this.producers = [];
@@ -9,11 +9,11 @@ export default class Peer {
     this.sendTransport = undefined;
   }
 
-  hasVideo () {
+  hasVideo() {
     return Boolean(this.producers.find((producer => producer.kind === 'video')));
   }
 
-  hasAudio () {
+  hasAudio() {
     return Boolean(this.producers.find((producer => producer.kind === 'audio')));
   }
 }

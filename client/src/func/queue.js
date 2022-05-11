@@ -1,18 +1,18 @@
 // Queue to handle async requests/responses
 export default class SocketQueue {
-  constructor () {
+  constructor() {
     this.queue = new Map();
   }
 
-  push (action, callback) {
+  push(action, callback) {
     this.queue.set(action, callback);
   }
 
-  get (action) {
+  get(action) {
     return this.queue.get(action);
   }
 
-  remove (action) {
+  remove(action) {
     this.queue.delete(action);
   }
 }

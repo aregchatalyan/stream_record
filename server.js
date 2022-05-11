@@ -1,9 +1,11 @@
-const fs = require('fs');
+const fsSync = require('fs');
+const util = require('util');
 const path = require('path');
-
 const https = require('https');
+const fs = require('fs').promises;
 const express = require('express');
 const { Server } = require('socket.io');
+const exec = util.promisify(require('child_process').exec);
 
 const { config: env } = require('dotenv');
 const { randomUUID: uuid } = require('crypto');
@@ -25,15 +27,22 @@ const { getPort, releasePort } = require('./utils/port');
 const { initializeWorkers, createRouter, createTransport } = require('./mediasoup');
 
 const PROCESS_NAME = process.env.PROCESS_NAME || 'FFmpeg';
-const SERVER_PORT = process.env.SERVER_PORT || 3000;
+const CLIENT_HOST = process.env.CLIENT_HOST;
+const CLIENT_PORT = process.env.CLIENT_PORT;
+const SERVER_PORT = process.env.SERVER_PORT || 3030;
 
 const HTTPS_OPTIONS = Object.freeze({
-  cert: fs.readFileSync('./ssl/cert.pem'),
-  key: fs.readFileSync('./ssl/key.pem')
+  cert: fsSync.readFileSync('./ssl/cert.pem'),
+  key: fsSync.readFileSync('./ssl/key.pem')
 });
 
 const httpsServer = https.createServer(HTTPS_OPTIONS, app);
-const io = new Server(httpsServer, { cors: { origin: 'https://localhost:8080' } });
+
+const io = new Server(httpsServer, {
+  cors: {
+    origin: `${CLIENT_HOST}:${CLIENT_PORT}`
+  }
+});
 
 let router;
 const peers = new Map();
@@ -102,6 +111,8 @@ const handleJsonMessage = async (jsonMessage) => {
       return await handleStartRecordRequest(jsonMessage);
     case 'stop-record':
       return await handleStopRecordRequest(jsonMessage);
+    case 'start-combine':
+      return await handleStartCombineRequest(jsonMessage);
     default:
       console.log('handleJsonMessage() unknown action [action:%s]', action);
   }
@@ -204,6 +215,59 @@ const handleStopRecordRequest = async (jsonMessage) => {
     releasePort(remotePort);
   }
 };
+
+const handleStartCombineRequest = async (jsonMessage) => {
+  console.log('handleStartCombineRequest() [data:%o]', jsonMessage);
+
+  const dir = await fs.readdir('./files');
+
+  const filteredByFileType = dir.filter(file => {
+    return [ '.mkv', '.mp4', '.webm' ].includes(path.extname(file).toLowerCase());
+  });
+
+  let v = '';
+  let a = '';
+  let layout = '';
+  let command = '';
+  const fileCount = filteredByFileType.length;
+
+  switch (fileCount) {
+    case 0:
+      return console.log('Failed to combine records, files not found');
+    case 1:
+      command = `ffmpeg -i ./files/${filteredByFileType[0]} ./files/completed/${Date.now()}-${fileCount}.mp4`;
+      break;
+    default:
+      const files = filteredByFileType.map((file, i) => {
+        v += `[${i}:v]`;
+        a += `[${i}:a]`;
+        layout = config.combiner[fileCount];
+
+        return (`-i ./files/${file}`);
+      }).join(' ')
+
+      command = `
+        ffmpeg ${files} \
+        -filter_complex "${v}xstack=inputs=${fileCount}:layout=${layout}[v];${a}amix=inputs=${fileCount}[a]" \
+        -map "[v]" -map "[a]" \
+        ./files/completed/${Date.now()}-${fileCount}.mp4
+      `;
+      break;
+  }
+
+  const startTime = Date.now();
+
+  const { error, stdout, stderr } = await exec(command);
+
+  console.error(`error: ${error}`);
+  console.log(`stdout: ${stdout}`);
+  console.error(`stderr: ${stderr}`);
+
+  for (const file of filteredByFileType) {
+    await fs.unlink(`./files/${file}`);
+    console.log(`File (${file}) was deleted after successful conversion.`, `Time: ${(Date.now() - startTime) / 1000}s`)
+  }
+}
 
 const publishProducerRtpStream = async (peer, producer) => {
   // console.log('publishProducerRtpStream()');
