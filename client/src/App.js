@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import { socket, peer } from "./func/main";
+import { socket, peer } from './func/main';
 
 const App = () => {
   const startBtnRef = useRef(null);
   const stopBtnRef = useRef(null);
-  const [disconnected, setDisconnected] = useState(socket.connected);
+  const [ disconnected, setDisconnected ] = useState(socket.connected);
 
   useEffect(() => {
     startBtnRef.current.disabled = true;
@@ -20,7 +20,7 @@ const App = () => {
 
     startBtnRef.current.disabled = true;
     stopBtnRef.current.disabled = false;
-  };
+  }
 
   const stopRecord = () => {
     socket.send(JSON.stringify({
@@ -30,14 +30,14 @@ const App = () => {
 
     startBtnRef.current.disabled = false;
     stopBtnRef.current.disabled = true;
-  };
+  }
 
   const combineRecords = () => {
     socket.send(JSON.stringify({
       action: 'start-combine',
       sessionId: peer.sessionId
     }));
-  };
+  }
 
   return (
     <div id="app">
@@ -75,7 +75,8 @@ const App = () => {
         <button onClick={() => {
           socket.disconnect();
           setDisconnected(true);
-        }} disabled={disconnected}>Disconnect</button>
+        }} disabled={disconnected}>Disconnect
+        </button>
       </div>
     </div>
   );

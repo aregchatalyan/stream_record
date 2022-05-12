@@ -265,8 +265,10 @@ const handleStartCombineRequest = async (jsonMessage) => {
 
   for (const file of filteredByFileType) {
     await fs.unlink(`./files/${file}`);
-    console.log(`File (${file}) was deleted after successful conversion.`, `Time: ${(Date.now() - startTime) / 1000}s`)
+    console.log(`File (${file}) was deleted after successful conversion.`)
   }
+
+  console.log(`Time: ${(Date.now() - startTime) / 1000}s`)
 }
 
 const publishProducerRtpStream = async (peer, producer) => {
