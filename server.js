@@ -1,8 +1,7 @@
-const fsSync = require('fs');
+const fs = require('fs');
 const util = require('util');
 const path = require('path');
 const https = require('https');
-const fs = require('fs').promises;
 const express = require('express');
 const { Server } = require('socket.io');
 const exec = util.promisify(require('child_process').exec);
@@ -32,8 +31,8 @@ const CLIENT_PORT = process.env.CLIENT_PORT;
 const SERVER_PORT = process.env.SERVER_PORT || 3030;
 
 const HTTPS_OPTIONS = Object.freeze({
-  cert: fsSync.readFileSync('./ssl/cert.pem'),
-  key: fsSync.readFileSync('./ssl/key.pem')
+  cert: fs.readFileSync('./ssl/cert.pem'),
+  key: fs.readFileSync('./ssl/key.pem')
 });
 
 const httpsServer = https.createServer(HTTPS_OPTIONS, app);
@@ -219,7 +218,7 @@ const handleStopRecordRequest = async (jsonMessage) => {
 const handleStartCombineRequest = async (jsonMessage) => {
   console.log('handleStartCombineRequest() [data:%o]', jsonMessage);
 
-  const dir = await fs.readdir('./files');
+  const dir = await fs.promises.readdir('./files');
 
   const filteredByFileType = dir.filter(file => {
     return [ '.mkv', '.mp4', '.webm' ].includes(path.extname(file).toLowerCase());
@@ -263,7 +262,7 @@ const handleStartCombineRequest = async (jsonMessage) => {
   console.error(`stderr: ${stderr}`);
 
   for (const file of filteredByFileType) {
-    await fs.unlink(`./files/${file}`);
+    await fs.promises.unlink(`./files/${file}`);
     console.log(`File (${file}) was deleted after successful conversion.`)
   }
 

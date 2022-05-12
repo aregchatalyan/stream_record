@@ -5,8 +5,9 @@ import { socket, peer } from './func/main';
 const App = () => {
   const startBtnRef = useRef(null);
   const stopBtnRef = useRef(null);
-  const [ disconnected, setDisconnected ] = useState(socket.connected);
+
   const [ rec, setRec ] = useState(false);
+  const [ disconnected, setDisconnected ] = useState(socket.connected);
 
   useEffect(() => {
     startBtnRef.current.disabled = true;
