@@ -252,7 +252,6 @@ const handleStartCombineRequest = async (jsonMessage) => {
         -map "[v]" -map "[a]" \
         ./files/completed/${Date.now()}-${fileCount}.mp4
       `;
-      break;
   }
 
   const startTime = Date.now();

@@ -6,11 +6,21 @@ const App = () => {
   const startBtnRef = useRef(null);
   const stopBtnRef = useRef(null);
   const [ disconnected, setDisconnected ] = useState(socket.connected);
+  const [ rec, setRec ] = useState(false);
 
   useEffect(() => {
     startBtnRef.current.disabled = true;
     stopBtnRef.current.disabled = true;
   }, []);
+
+  useEffect(() => {
+    if (rec) {
+      setTimeout(() => {
+        stopRecord();
+        console.log('The record stopped by timer!');
+      }, 15000);
+    }
+  }, [ rec ]);
 
   const startRecord = () => {
     socket.send(JSON.stringify({
@@ -20,6 +30,8 @@ const App = () => {
 
     startBtnRef.current.disabled = true;
     stopBtnRef.current.disabled = false;
+
+    setRec(true);
   }
 
   const stopRecord = () => {
@@ -30,6 +42,8 @@ const App = () => {
 
     startBtnRef.current.disabled = false;
     stopBtnRef.current.disabled = true;
+
+    setRec(false);
   }
 
   const combineRecords = () => {
