@@ -125,6 +125,7 @@ const getMediaStream = async () => {
 
   // Enable the start record button
   document.getElementById('startRecordButton').disabled = false;
+  document.getElementById('combineRecordsButton').disabled = false;
 };
 
 const handleConnectTransportRequest = async (jsonMessage) => {

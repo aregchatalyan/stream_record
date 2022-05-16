@@ -4,7 +4,8 @@ const path = require('path');
 const https = require('https');
 const express = require('express');
 const { Server } = require('socket.io');
-const exec = util.promisify(require('child_process').exec);
+const child_process = require('child_process');
+const exec = util.promisify(child_process.exec);
 
 const { config: env } = require('dotenv');
 const { randomUUID: uuid } = require('crypto');
@@ -185,6 +186,7 @@ const handleProduceRequest = async (jsonMessage) => {
 
 const handleStartRecordRequest = async (jsonMessage) => {
   console.log('handleStartRecordRequest() [data:%o]', jsonMessage);
+
   const peer = peers.get(jsonMessage.sessionId);
 
   if (!peer) {
@@ -218,55 +220,57 @@ const handleStopRecordRequest = async (jsonMessage) => {
 const handleStartCombineRequest = async (jsonMessage) => {
   console.log('handleStartCombineRequest() [data:%o]', jsonMessage);
 
-  const dir = await fs.promises.readdir('./files');
+  try {
+    const dir = await fs.promises.readdir('./files');
 
-  const filteredByFileType = dir.filter(file => {
-    return [ '.mkv', '.mp4', '.webm' ].includes(path.extname(file).toLowerCase());
-  });
+    const filteredByFileType = dir.filter(file => [ '.mkv', '.mp4', '.webm' ]
+      .includes(path.extname(file).toLowerCase()));
 
-  let v = '';
-  let a = '';
-  let layout = '';
-  let command = '';
-  const fileCount = filteredByFileType.length;
+    let v = '';
+    let a = '';
+    let layout = '';
+    let command = '';
+    const fileCount = filteredByFileType.length;
 
-  switch (fileCount) {
-    case 0:
-      return console.log('Failed to combine records, files not found');
-    case 1:
+    if (fileCount === 0) return console.log('Failed to combine records, files not found');
+
+    if (fileCount === 1) {
       command = `ffmpeg -i ./files/${filteredByFileType[0]} ./files/completed/${Date.now()}-${fileCount}.mp4`;
-      break;
-    default:
+    } else {
       const files = filteredByFileType.map((file, i) => {
         v += `[${i}:v]`;
         a += `[${i}:a]`;
         layout = config.combiner[fileCount];
 
         return (`-i ./files/${file}`);
-      }).join(' ')
+      }).join(' ');
 
       command = `
-        ffmpeg ${files} \
-        -filter_complex "${v}xstack=inputs=${fileCount}:layout=${layout}[v];${a}amix=inputs=${fileCount}[a]" \
-        -map "[v]" -map "[a]" \
-        ./files/completed/${Date.now()}-${fileCount}.mp4
-      `;
+      ffmpeg ${files} \
+      -filter_complex "${v}xstack=inputs=${fileCount}:layout=${layout}[v];${a}amix=inputs=${fileCount}[a]" \
+      -map "[v]" -map "[a]" \
+      ./files/completed/${Date.now()}-${fileCount}.mp4
+    `;
+    }
+
+    const startTime = Date.now();
+
+    const { error, stdout, stderr } = await exec(command);
+
+    console.error(`error: ${error}`);
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+
+    // TODO: delete comment to remove source files
+    // for (const file of filteredByFileType) {
+    //   await fs.promises.unlink(`./files/${file}`);
+    //   console.log(`File (${file}) was deleted after successful conversion.`)
+    // }
+
+    console.log(`Time: ${(Date.now() - startTime) / 1000}s`);
+  } catch (e) {
+    throw e.message;
   }
-
-  const startTime = Date.now();
-
-  const { error, stdout, stderr } = await exec(command);
-
-  console.error(`error: ${error}`);
-  console.log(`stdout: ${stdout}`);
-  console.error(`stderr: ${stderr}`);
-
-  for (const file of filteredByFileType) {
-    await fs.promises.unlink(`./files/${file}`);
-    console.log(`File (${file}) was deleted after successful conversion.`)
-  }
-
-  console.log(`Time: ${(Date.now() - startTime) / 1000}s`)
 }
 
 const publishProducerRtpStream = async (peer, producer) => {

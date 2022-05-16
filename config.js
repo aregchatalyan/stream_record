@@ -14,7 +14,7 @@ const getLocalIp = () => {
 };
 
 module.exports = Object.freeze({
-  numWorkers: Array(os.cpus().length).fill(0),
+  numWorkers: os.cpus(),
   worker: {
     logLevel: 'debug',
     logTags: [
