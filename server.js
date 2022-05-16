@@ -219,7 +219,6 @@ const handleStopRecordRequest = async (jsonMessage) => {
 
 const handleStartCombineRequest = async (jsonMessage) => {
   console.log('handleStartCombineRequest() [data:%o]', jsonMessage);
-
   try {
     const dir = await fs.promises.readdir('./files');
 
@@ -262,9 +261,11 @@ const handleStartCombineRequest = async (jsonMessage) => {
     console.error(`stderr: ${stderr}`);
 
     // TODO: delete comment to remove source files
-    // for (const file of filteredByFileType) {
-    //   await fs.promises.unlink(`./files/${file}`);
-    //   console.log(`File (${file}) was deleted after successful conversion.`)
+    // if (!error) {
+      // for (const file of filteredByFileType) {
+      //   await fs.promises.unlink(`./files/${file}`);
+      //   console.log(`File (${file}) was deleted after successful conversion.`)
+      // }
     // }
 
     console.log(`Time: ${(Date.now() - startTime) / 1000}s`);

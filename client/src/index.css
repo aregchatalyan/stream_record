@@ -24,6 +24,7 @@
 }
 
 #control button {
+  width: 140px;
   padding: 5px;
   font-family: monospace;
   font-weight: bold;
