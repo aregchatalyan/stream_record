@@ -29,7 +29,7 @@ const { initializeWorkers, createRouter, createTransport } = require('./mediasou
 const PROCESS_NAME = process.env.PROCESS_NAME || 'FFmpeg';
 const CLIENT_HOST = process.env.CLIENT_HOST;
 const CLIENT_PORT = process.env.CLIENT_PORT;
-const SERVER_PORT = process.env.SERVER_PORT || 3030;
+const SERVER_PORT = process.env.SERVER_PORT || 5050;
 
 const HTTPS_OPTIONS = Object.freeze({
   cert: fs.readFileSync('./ssl/cert.pem'),

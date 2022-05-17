@@ -7,7 +7,8 @@
     "start": "nodemon server.js",
     "client:install": "npm install --prefix client",
     "client:start": "npm start --prefix client",
-    "client:build": "npm run build --prefix client"
+    "client:build": "npm run build --prefix client",
+    "ssl": "node ssl-create.js"
   },
   "keywords": [],
   "author": "",
