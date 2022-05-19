@@ -8,7 +8,7 @@ import SocketQueue from './queue';
 let peer;
 const queue = new SocketQueue();
 
-const socket = io(`https://localhost:5050`, {
+const socket = io(`https://record.univern.org/`, {
   transports: [ 'websocket', 'polling' ],
   autoConnect: true,
   secure: true,
