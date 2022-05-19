@@ -4,11 +4,12 @@ import * as mediasoup from 'mediasoup-client';
 import GUM from './gum';
 import Peer from './peer';
 import SocketQueue from './queue';
+import { RECORDER_URL } from '../config';
 
 let peer;
 const queue = new SocketQueue();
 
-const socket = io(`https://record.univern.org/`, {
+const socket = io(`${RECORDER_URL}`, {
   transports: [ 'websocket', 'polling' ],
   autoConnect: true,
   secure: true,
