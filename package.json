@@ -23,6 +23,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "mediasoup": "^3.9.5",
+    "node-fetch": "^3.2.4",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {

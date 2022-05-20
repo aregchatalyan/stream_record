@@ -23,6 +23,7 @@ const config = require('./config');
 const Peer = require('./utils/peer');
 const FFmpeg = require('./codecs/ffmpeg');
 const GStreamer = require('./codecs/gstreamer');
+const fileStreaming = require('./utils/file-streaming');
 const { getPort, releasePort } = require('./utils/port');
 const { initializeWorkers, createRouter, createTransport } = require('./mediasoup');
 
@@ -43,6 +44,8 @@ const io = new Server(httpsServer, {
     origin: `${CLIENT_HOST}:${CLIENT_PORT}`
   }
 });
+
+app.get('/video', (req, res) => fileStreaming(req, res));
 
 let router;
 const peers = new Map();
