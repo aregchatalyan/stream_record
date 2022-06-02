@@ -10,7 +10,7 @@
     "client:start:dev": "npm start --prefix client",
     "client:build": "npm run build --prefix client",
     "client:install": "npm install --prefix client",
-    "start:both:dev": "concurrently \"npm run server:start:dev\" \"npm run client:start:dev\"",
+    "start:both:dev": "concurrently \"npm run ssl\" \"npm run server:start:dev\" \"npm run client:start:dev\"",
     "start": "npm run client:install && npm run client:build && npm run server:install && npm run server:start",
     "ssl": "node ssl-create.js"
   },

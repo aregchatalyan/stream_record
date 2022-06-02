@@ -37,14 +37,25 @@ module.exports.createRouter = async () => {
   return await worker.createRouter({ mediaCodecs: config.router.mediaCodecs });
 };
 
-module.exports.createTransport = async (transportType, router, options) => {
+module.exports.createTransport = async (transportType, router) => {
   // console.log('createTransport() [type:%s. options:%o]', transportType, options);
+  const { maxIncomingBitrate, ...configWebRtcTransport } = config.webRtcTransport;
 
-  switch (transportType) {
-    case 'webRtc':
-      return await router.createWebRtcTransport(config.webRtcTransport);
-    case 'plain':
-      return await router.createPlainRtpTransport(config.plainRtpTransport);
+  if (transportType === 'webRtc') {
+    const transport = await router.createWebRtcTransport(configWebRtcTransport);
+
+    if (maxIncomingBitrate) {
+      try {
+        await transport.setMaxIncomingBitrate(maxIncomingBitrate);
+      } catch (e) {
+        console.error(e.message ? e.message : e);
+      }
+    }
+    return transport;
+  }
+
+  if (transportType === 'plain') {
+    return await router.createPlainRtpTransport(config.plainRtpTransport);
   }
 };
 

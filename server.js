@@ -248,11 +248,11 @@ const handleStartCombineRequest = async (jsonMessage) => {
       }).join(' ');
 
       command = `
-      ffmpeg ${files} \
-      -filter_complex "${v}xstack=inputs=${fileCount}:layout=${layout}[v];${a}amix=inputs=${fileCount}[a]" \
-      -map "[v]" -map "[a]" \
-      ./files/completed/${Date.now()}-${fileCount}.mp4
-    `;
+        ffmpeg ${files} \
+        -filter_complex "${v}xstack=inputs=${fileCount}:layout=${layout}[v];${a}amix=inputs=${fileCount}[a]" \
+        -map "[v]" -map "[a]" \
+        ./files/completed/${Date.now()}-${fileCount}.mp4
+      `;
     }
 
     const startTime = Date.now();

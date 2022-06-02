@@ -32,9 +32,16 @@ const paths = [
 (async () => {
   for (const { key_file, cert_file } of paths) {
     try {
-      await fs.promises.unlink(key_file);
-      await fs.promises.unlink(cert_file);
+      fs.stat(key_file, async (e, s) => {
+        if (!e) await fs.promises.unlink(key_file);
+      });
+
+      fs.stat(cert_file, async (e, s) => {
+        if (!e) await fs.promises.unlink(cert_file);
+      });
+
       await exec(`mkcert -key-file ${key_file} -cert-file ${cert_file} 0.0.0.0 localhost ${getLocalIp()}`);
+      console.log('SSL certs created');
     } catch (e) {
       console.error(e);
     }

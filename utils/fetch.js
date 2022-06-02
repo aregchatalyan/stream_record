@@ -27,6 +27,6 @@ module.exports = async (...args) => {
 
     return data;
   } catch (e) {
-    console.error(e);
+    throw new Error(e.message ? e.message : 'Internal Server Error');
   }
 }
