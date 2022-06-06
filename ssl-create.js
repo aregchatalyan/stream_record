@@ -32,11 +32,11 @@ const paths = [
 (async () => {
   for (const { key_file, cert_file } of paths) {
     try {
-      fs.stat(key_file, async (e, s) => {
+      fs.stat(key_file, async (e) => {
         if (!e) await fs.promises.unlink(key_file);
       });
 
-      fs.stat(cert_file, async (e, s) => {
+      fs.stat(cert_file, async (e) => {
         if (!e) await fs.promises.unlink(cert_file);
       });
 
