@@ -11,35 +11,22 @@ const App = () => {
   const stopBtnRef = useRef(null);
   const combineBtnRef = useRef(null);
 
-  const [ rec, setRec ] = useState(false);
-
   useEffect(() => {
     buttonState(startBtnRef, true);
     buttonState(stopBtnRef, true);
     buttonState(combineBtnRef, true);
   }, []);
 
-  useEffect(() => {
-    if (rec) {
-      setTimeout(() => {
-        stopRecord();
-        console.log('The record stopped by timer!');
-      }, 15000);
-    }
-  }, [ rec ]);
-
   const startRecord = () => {
     sendAction('start-record');
     buttonState(startBtnRef, true);
     buttonState(stopBtnRef, false);
-    setRec(true);
   }
 
   const stopRecord = () => {
     sendAction('stop-record');
     buttonState(startBtnRef, false);
     buttonState(stopBtnRef, true);
-    setRec(false);
   }
 
   const combineRecords = () => {
