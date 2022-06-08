@@ -66,7 +66,7 @@ module.exports = Object.freeze({
   webRtcTransport: {
     listenIps: [ {
       ip: '0.0.0.0', announcedIp: process.env.NODE_ENV === 'production'
-        ? '52.29.86.126'
+        ? '3.72.185.44'
         : getLocalIp()
     } ], // TODO: Change announcedIp to your external IP or domain name
     enableUdp: true,
@@ -77,7 +77,7 @@ module.exports = Object.freeze({
   plainRtpTransport: {
     listenIp: {
       ip: '0.0.0.0', announcedIp: process.env.NODE_ENV === 'production'
-        ? '52.29.86.126'
+        ? '3.72.185.44'
         : getLocalIp()
     }, // TODO: Change announcedIp to your external IP or domain name
     rtcpMux: true,
