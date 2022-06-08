@@ -30,22 +30,22 @@ const paths = [
 ];
 
 (async () => {
-  let existDirLength = 0;
+  const { F_OK } = fs.constants;
 
   try {
     for (const { key_file, cert_file } of paths) {
-      await fs.promises.access(key_file);
-      await fs.promises.access(cert_file);
+      fs.access(key_file, F_OK, async (exist) => {
+        if (!exist) await fs.promises.unlink(key_file);
+      });
 
-      existDirLength++;
+      fs.access(cert_file, F_OK, async (exist) => {
+        if (!exist) await fs.promises.unlink(cert_file);
+      });
 
-      if (existDirLength === paths.length) {
-        await fs.promises.unlink(key_file);
-        await fs.promises.unlink(cert_file);
-        await exec(`mkcert -key-file ${key_file} -cert-file ${cert_file} 0.0.0.0 localhost ${getLocalIp()}`);
-        console.log('SSL certs created');
-      }
+      await exec(`mkcert -key-file ${key_file} -cert-file ${cert_file} 0.0.0.0 localhost ${getLocalIp()}`);
     }
+
+    console.log('SSL certs created');
   } catch (e) {
     console.error(e);
   }
