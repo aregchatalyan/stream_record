@@ -14,11 +14,16 @@ module.exports = async (...args) => {
     const response = await fetch(...args);
 
     let data;
+    const type =
+      response.headers
+        .get('content-type').split(';')[0]
+      || response.headers
+        .get('content-type');
 
-    if (response.headers.get('content-type') === 'text/plain') {
-      data = await response.text();
-    } else {
+    if ('application/json' === type) {
       data = await response.json();
+    } else {
+      data = await response.text();
     }
 
     if (!response.ok) {
@@ -27,6 +32,6 @@ module.exports = async (...args) => {
 
     return data;
   } catch (e) {
-    throw new Error(e.message ? e.message : 'Internal Server Error');
+    return { status: 400, message: e.message };
   }
 }
