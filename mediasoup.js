@@ -55,7 +55,7 @@ module.exports.createTransport = async (transportType, router) => {
   }
 
   if (transportType === 'plain') {
-    return await router.createPlainRtpTransport(config.plainRtpTransport);
+    return await router.createPlainTransport(config.plainRtpTransport);
   }
 };
 

@@ -1,6 +1,6 @@
 const DEFAULT_CONSTRAINTS = Object.freeze({
   audio: true,
-  video: { width: 640, height: 480 }
+  video: { width: 1920, height: 1080 }
 });
 
 // Gets the users camera and returns the media stream
